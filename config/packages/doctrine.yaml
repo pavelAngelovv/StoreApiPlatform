@@ -2,7 +2,7 @@ doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
         types:
-            uuid_binary_ordered_time: 'Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType'
+            uuid: 'uuid'
 
         profiling_collect_backtrace: '%kernel.debug%'
     orm:

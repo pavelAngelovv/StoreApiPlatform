@@ -17,7 +17,7 @@ class Alcohol
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "CUSTOM")]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[ORM\Column(type: "uuid_binary_ordered_time")]
+    #[ORM\Column(type: "uuid")]
     #[Groups(["alcohol"])]
     private ?UuidInterface $id = null;
 
