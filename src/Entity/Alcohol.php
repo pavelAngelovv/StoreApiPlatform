@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AlcoholRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,10 +15,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Alcohol
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+    #[ORM\Column(type: "uuid_binary_ordered_time")]
     #[Groups(["alcohol"])]
-    private ?int $id = null;
+    private ?UuidInterface $id = null;
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Alcohol name is required.')]
     #[Groups(["alcohol"])]
@@ -45,13 +49,13 @@ class Alcohol
     #[Groups(["alcohol"])]
     private ?float $abv = null;
 
-    #[ORM\OneToMany(mappedBy: 'alcohol', targetEntity: Image::class, cascade: ["persist"])]
+    #[ORM\ManyToOne(targetEntity: Image::class, cascade: ["persist"])]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'Alcohol image is required.')]
     #[Groups(["alcohol"])]
     private ?Image $image = null;
 
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }

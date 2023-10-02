@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
@@ -12,10 +14,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Image
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+    #[ORM\Column(type: "uuid_binary_ordered_time")]
     #[Groups(["alcohol"])]
-    private ?int $id = null;
+    private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["alcohol"])]
@@ -25,12 +28,7 @@ class Image
     #[Groups(["alcohol"])]
     private ?string $url = null;
 
-    #[ORM\ManyToOne(inversedBy: 'image')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["alcohol"])]
-    private ?Alcohol $alcohol = null;
-
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
@@ -55,18 +53,6 @@ class Image
     public function setUrl(string $url): static
     {
         $this->url = $url;
-
-        return $this;
-    }
-
-    public function getAlcohol(): ?Alcohol
-    {
-        return $this->alcohol;
-    }
-
-    public function setAlcohol(?Alcohol $alcohol): static
-    {
-        $this->alcohol = $alcohol;
 
         return $this;
     }

@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ProducerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProducerRepository::class)]
@@ -12,10 +14,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Producer
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+    #[ORM\Column(type: "uuid_binary_ordered_time")]
     #[Groups(["alcohol"])]
-    private ?int $id = null;
+    private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["alcohol"])]
@@ -25,7 +28,7 @@ class Producer
     #[Groups(["alcohol"])]
     private ?string $country = null;
 
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
