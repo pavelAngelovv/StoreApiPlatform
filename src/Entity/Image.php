@@ -39,6 +39,7 @@ class Image
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -50,6 +51,7 @@ class Image
     public function setUrl(string $url): static
     {
         $this->url = $url;
+
         return $this;
     }
 }
