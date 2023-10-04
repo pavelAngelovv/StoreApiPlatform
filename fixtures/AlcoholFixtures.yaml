@@ -1,13 +1,3 @@
-App\Entity\Producer:
-  producer_{1..10}:
-    name: <company()>
-    country: <country()>
-
-App\Entity\Image:
-  image_{1..50}:
-    name: <words(2, true)>
-    url: <imageUrl(800, 600, 'alcohol')>
-
 App\Entity\Alcohol:
   alcohol_{1..50}:
     name: <words(2, true)>

@@ -1,0 +1,4 @@
+App\Entity\Producer:
+  producer_{1..10}:
+    name: <company()>
+    country: <country()>
