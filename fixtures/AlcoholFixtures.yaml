@@ -5,7 +5,7 @@ App\Entity\Producer:
 
 App\Entity\Image:
   image_{1..50}:
-    filename: <uuid()>.jpg
+    name: <words(2, true)>
     url: <imageUrl(800, 600, 'alcohol')>
 
 App\Entity\Alcohol:
