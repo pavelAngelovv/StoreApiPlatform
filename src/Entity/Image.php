@@ -9,7 +9,6 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
-// #[ApiResource]
 class Image
 {
     #[ORM\Id]
