@@ -1,0 +1,8 @@
+App\Entity\Alcohol:
+  alcohol_{1..50}:
+    name: <words(2, true)>
+    type: <randomElement(['beer', 'whiskey', 'wine', 'rum', 'vodka'])>
+    description: <paragraph()>
+    producer: '@producer_<numberBetween(1, 10)>'
+    abv: <randomFloat(4, 40, 1)>
+    image: '@image_<numberBetween(1, 50)>'
