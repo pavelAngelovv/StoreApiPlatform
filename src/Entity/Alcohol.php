@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AlcoholRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +13,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AlcoholRepository::class)]
-#[ApiResource(normalizationContext: ['groups' => ['alcohol']])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['alcohol']],
+    paginationClientItemsPerPage: true
+)]
+#[ApiFilter(SearchFilter::class, properties: [
+    'name' => 'partial',
+    'type' => 'iexact',
+])]
 class Alcohol
 {
     #[ORM\Id]
