@@ -4,6 +4,8 @@ namespace App\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Alcohol;
+use App\Entity\Image;
+use App\Entity\Producer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class StoreApiTest extends ApiTestCase
@@ -61,28 +63,25 @@ class StoreApiTest extends ApiTestCase
     public function testGetItemSuccess(): void
     {
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'architecto quod']);
-
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
+    
         $response = $this->client->request('GET', '/api/alcohols/' . $alcohol->getId());
-
+    
         $responseContent = $response->getContent();
-
+    
         $this->assertResponseIsSuccessful();
         $this->assertJson($responseContent);
-
-        $responseData = json_decode($responseContent, true);
-
-        $this->assertIsArray($responseData);
-        $this->assertArrayHasKey('@id', $responseData);
-        $this->assertArrayHasKey('@type', $responseData);
-        $this->assertArrayHasKey('id', $responseData);
-        $this->assertArrayHasKey('name', $responseData);
-
-        $this->assertSame('/api/alcohols/' . $alcohol->getId(), $responseData['@id']);
-        $this->assertSame('Alcohol', $responseData['@type']);
-        $this->assertEquals($alcohol->getId(), $responseData['id']);
-        $this->assertEquals($alcohol->getName(), $responseData['name']);
+    
+        $expectedData = [
+            '@id' => '/api/alcohols/' . $alcohol->getId(),
+            '@type' => 'Alcohol',
+            'id' => $alcohol->getId()->toString(),
+            'name' => $alcohol->getName(),
+        ];
+    
+        $this->assertJsonContains($expectedData);
     }
+    
     
     public function testGetItemFailure(): void
     {
@@ -101,13 +100,17 @@ class StoreApiTest extends ApiTestCase
     {
         $this->authenticateClient();
 
+        $entityManager = $this->getContainer()->get('doctrine')->getManager();
+        $producer = $entityManager->getRepository(Producer::class)->findOneBy(['name' => 'Hartmann-Huels']);
+        $image = $entityManager->getRepository(Image::class)->findOneBy(['name' => 'saepe eum']);
+
         $postData = [
             'name' => 'Test Beer',
             'type' => 'beer',
             'description' => 'Test for creating a delicious beer',
-            'producer' => "/api/producers/48c4de77-111a-4089-8a21-fa41da88ec0f", 
+            'producer' => '/api/producers/' . $producer->getId(),
             'abv' => 7.5,
-            "image" => "/api/images/df29e726-ccd0-4dee-8f90-1a0fad5efa70"
+            'image' => '/api/images/' . $image->getId(),
         ];
     
         $this->client->request(
@@ -118,24 +121,23 @@ class StoreApiTest extends ApiTestCase
         
         $this->assertResponseIsSuccessful();
         
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseData = json_decode($responseContent, true);
-        
-        $this->assertIsArray($responseData);
-        $this->assertArrayHasKey('name', $responseData);
-        $this->assertArrayHasKey('type', $responseData);
-        $this->assertArrayHasKey('abv', $responseData);
-        
-        $this->assertEquals('Test Beer', $responseData['name']);
-        $this->assertEquals('beer', $responseData['type']);
-        $this->assertEquals(7.5, $responseData['abv']);
-        
-        $this->assertArrayHasKey('producer', $responseData);
-        $this->assertEquals('48c4de77-111a-4089-8a21-fa41da88ec0f', $responseData['producer']['id']);
-        $this->assertEquals('Hartmann-Huels', $responseData['producer']['name']);
-        $this->assertEquals('Ukraine', $responseData['producer']['country']);
-
-        $this->assertArrayHasKey('image', $responseData);
+        $expectedData = [
+            'name' => 'Test Beer',
+            'type' => 'beer',
+            'abv' => 7.5,
+            'producer' => [
+                'id' => $producer->getId()->toString(),
+                'name' => $producer->getName(),
+                'country' => $producer->getCountry(),
+            ],
+            'image' => [
+                'id' => $image->getId()->toString(),
+                'name' => $image->getName(),
+                'url' => $image->getUrl(),
+            ],
+        ];
+    
+        $this->assertJsonContains($expectedData);
     }
     public function testCreateItemFailure(): void
     {
@@ -166,34 +168,44 @@ class StoreApiTest extends ApiTestCase
         $this->authenticateClient();
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
         $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
-        $itemId = $alcohol->getId();
+        $producer = $entityManager->getRepository(Producer::class)->findOneBy(['name' => 'Hartmann-Huels']);
+        $image = $entityManager->getRepository(Image::class)->findOneBy(['name' => 'saepe eum']);
 
         $updatedData = [
             'name' => 'Updated Beer',
             'type' => 'beer',
             'description' => 'Updated beer description',
-            'producer' => "/api/producers/48c4de77-111a-4089-8a21-fa41da88ec0f", 
+            'producer' => "/api/producers/" . $producer->getId(), 
             'abv' => 7.5,
-            "image" => "/api/images/df29e726-ccd0-4dee-8f90-1a0fad5efa70"
+            "image" => "/api/images/" . $image->getId()
         ];
 
         $this->client->request(
             'PUT',
-            '/api/alcohols/' . $itemId, 
+            '/api/alcohols/' . $alcohol->getId(), 
             ['json' => $updatedData],
         );
 
         $this->assertResponseIsSuccessful();
 
-        $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $updatedAlcohol = $entityManager->getRepository(Alcohol::class)->find($itemId);
-
-        $this->assertNotNull($updatedAlcohol);
-        $this->assertEquals('Updated Beer', $updatedAlcohol->getName());
-        $this->assertEquals('beer', $updatedAlcohol->getType());
-        $this->assertEquals('Updated beer description', $updatedAlcohol->getDescription());
-        $this->assertEquals('48c4de77-111a-4089-8a21-fa41da88ec0f', $updatedAlcohol->getProducer()->getId());
-        $this->assertEquals(7.5, $updatedAlcohol->getAbv());
+        $expectedData = [
+            'name' => 'Updated Beer',
+            'type' => 'beer',
+            'description' => 'Updated beer description',
+            'producer' => [
+                'id' => $producer->getId()->toString(),
+                'name' => $producer->getName(),
+                'country' => $producer->getCountry(),
+            ],
+            'abv' => 7.5,
+            'image' => [
+                'id' => $image->getId()->toString(),
+                'name' => $image->getName(),
+                'url' => $image->getUrl(),
+            ],
+        ];
+    
+        $this->assertJsonContains($expectedData);
     }
 
     public function testUpdateItemFailure(): void
