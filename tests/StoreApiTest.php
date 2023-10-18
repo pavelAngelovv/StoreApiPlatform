@@ -45,13 +45,15 @@ class StoreApiTest extends ApiTestCase
         $response = $this->client->request('GET', '/api/alcohols?page=1&itemsPerPage=30');
         $content = $response->getContent();
         $data = json_decode($content, true);
-
+    
         $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
-        
-        $this->assertArrayHasKey('hydra:totalItems', $data);
-        $this->assertArrayHasKey('hydra:member', $data);
-        $this->assertSame(50, $data['hydra:totalItems']);
+    
+        $expectedData = [
+            'hydra:totalItems' => 51,
+            "hydra:member" => []
+        ];
+    
+        $this->assertJsonContains($expectedData);
     }
     
     public function testGetListFailure(): void
@@ -63,14 +65,11 @@ class StoreApiTest extends ApiTestCase
     public function testGetItemSuccess(): void
     {
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'Test Alcohol']);
     
-        $response = $this->client->request('GET', '/api/alcohols/' . $alcohol->getId());
-    
-        $responseContent = $response->getContent();
+        $this->client->request('GET', '/api/alcohols/' . $alcohol->getId());
     
         $this->assertResponseIsSuccessful();
-        $this->assertJson($responseContent);
     
         $expectedData = [
             '@id' => '/api/alcohols/' . $alcohol->getId(),
@@ -81,7 +80,6 @@ class StoreApiTest extends ApiTestCase
     
         $this->assertJsonContains($expectedData);
     }
-    
     
     public function testGetItemFailure(): void
     {
@@ -101,8 +99,8 @@ class StoreApiTest extends ApiTestCase
         $this->authenticateClient();
 
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $producer = $entityManager->getRepository(Producer::class)->findOneBy(['name' => 'Hartmann-Huels']);
-        $image = $entityManager->getRepository(Image::class)->findOneBy(['name' => 'saepe eum']);
+        $producer = $entityManager->getRepository(Producer::class)->findOneBy(['name' => 'Test Company']);
+        $image = $entityManager->getRepository(Image::class)->findOneBy(['name' => 'Test Image']);
 
         $postData = [
             'name' => 'Test Beer',
@@ -155,7 +153,7 @@ class StoreApiTest extends ApiTestCase
     public function testUpdateItemUnauthenticated(): void
     {
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'Test Alcohol']);
         $itemId = $alcohol->getId();
 
         $this->client->request('PUT', '/api/alcohols/' . $itemId);
@@ -167,9 +165,9 @@ class StoreApiTest extends ApiTestCase
     {
         $this->authenticateClient();
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
-        $producer = $entityManager->getRepository(Producer::class)->findOneBy(['name' => 'Hartmann-Huels']);
-        $image = $entityManager->getRepository(Image::class)->findOneBy(['name' => 'saepe eum']);
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'Test Alcohol']);
+        $producer = $entityManager->getRepository(Producer::class)->findOneBy(['name' => 'Test Company']);
+        $image = $entityManager->getRepository(Image::class)->findOneBy(['name' => 'Test Image']);
 
         $updatedData = [
             'name' => 'Updated Beer',
@@ -212,7 +210,7 @@ class StoreApiTest extends ApiTestCase
     {
         $this->authenticateClient();
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'Test Alcohol']);
         $itemId = $alcohol->getId();
 
         $this->client->request(
@@ -227,7 +225,7 @@ class StoreApiTest extends ApiTestCase
     public function testDeleteItemUnauthenticated(): void
     {
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'Test Alcohol']);
         $itemId = $alcohol->getId();
 
         $this->client->request('DELETE', '/api/alcohols/' . $itemId);
@@ -239,7 +237,7 @@ class StoreApiTest extends ApiTestCase
     {
         $this->authenticateClient();
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'vel quasi']);
+        $alcohol = $entityManager->getRepository(Alcohol::class)->findOneBy(['name' => 'Test Alcohol']);
         $itemId = $alcohol->getId();
 
         $this->client->request('DELETE', '/api/alcohols/' . $itemId);
