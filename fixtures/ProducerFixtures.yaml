@@ -1,4 +1,8 @@
 App\Entity\Producer:
-  producer_{1..10}:
+  producer_{1..9}:
     name: <company()>
     country: <country()>
+
+  producer_10:
+    name: 'Test Company'
+    country: 'Test Country'

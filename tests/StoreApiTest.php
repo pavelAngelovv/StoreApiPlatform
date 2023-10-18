@@ -49,7 +49,7 @@ class StoreApiTest extends ApiTestCase
         $this->assertResponseIsSuccessful();
     
         $expectedData = [
-            'hydra:totalItems' => 51,
+            'hydra:totalItems' => 50,
             "hydra:member" => []
         ];
     

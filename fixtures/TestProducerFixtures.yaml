@@ -1,4 +1,0 @@
-App\Entity\Producer:
-  producer_11:
-    name: 'Test Company'
-    country: 'Test Country'

@@ -1,8 +1,16 @@
 App\Entity\Alcohol:
-  alcohol_{1..50}:
+  alcohol_{1..49}:
     name: <words(2, true)>
     type: <randomElement(['beer', 'whiskey', 'wine', 'rum', 'vodka'])>
-    description: <paragraph()>
+    description: <sentence()>
     producer: '@producer_<numberBetween(1, 10)>'
     abv: <randomFloat(4, 40, 1)>
     image: '@image_<numberBetween(1, 50)>'
+
+  alcohol_50:
+    name: 'Test Alcohol'
+    type: 'beer'
+    description: 'This is a test alcohol for testing purposes.'
+    producer: '@producer_10'
+    abv: 5.0
+    image: '@image_50'

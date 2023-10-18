@@ -1,4 +1,0 @@
-App\Entity\Image:
-  image_51:
-    name: 'Test Image'
-    url: 'http://example.com/test-image.jpg'

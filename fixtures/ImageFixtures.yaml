@@ -1,4 +1,8 @@
 App\Entity\Image:
-  image_{1..50}:
+  image_{1..49}:
     name: <words(2, true)>
     url: <imageUrl(800, 600, 'alcohol')>
+
+  image_50:
+    name: 'Test Image'
+    url: 'http://example.com/test-image.jpg'

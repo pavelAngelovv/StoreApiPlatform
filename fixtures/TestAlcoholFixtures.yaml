@@ -1,8 +1,0 @@
-App\Entity\Alcohol:
-  alcohol_51:
-    name: 'Test Alcohol'
-    type: 'beer'
-    description: 'This is a test alcohol for testing purposes.'
-    producer: '@producer_11'
-    abv: 5.0
-    image: '@image_51'
