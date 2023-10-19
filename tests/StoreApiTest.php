@@ -42,9 +42,7 @@ class StoreApiTest extends ApiTestCase
     }
     public function testGetCollectionSuccess(): void
     {
-        $response = $this->client->request('GET', '/api/alcohols?page=1&itemsPerPage=30');
-        $content = $response->getContent();
-        $data = json_decode($content, true);
+        $this->client->request('GET', '/api/alcohols?page=1&itemsPerPage=30');
     
         $this->assertResponseIsSuccessful();
     
