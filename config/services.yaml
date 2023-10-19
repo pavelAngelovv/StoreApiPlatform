@@ -24,7 +24,7 @@ services:
         tags:
             - { name: 'kernel.event_listener', event: 'kernel.exception' }
 
-    App\EventSubscriber\AlcoholDateSubscriber:
+    App\EventSubscriber\DateCreatedModifiedSubscriber:
         tags:
             - { name: doctrine.event_subscriber, connection: default }
     # add more service definitions when explicit configuration is needed

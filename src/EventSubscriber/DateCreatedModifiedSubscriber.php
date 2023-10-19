@@ -6,7 +6,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
-class AlcoholDateSubscriber implements EventSubscriber
+class DateCreatedModifiedSubscriber implements EventSubscriber
 {
     public function getSubscribedEvents(): array
     {
