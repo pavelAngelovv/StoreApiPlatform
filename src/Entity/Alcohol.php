@@ -11,7 +11,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\AlcoholRepository;
-use App\State\AlcoholCreateProcessor;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -82,6 +82,14 @@ class Alcohol
     #[Assert\NotNull(message: 'Alcohol image is required.')]
     #[Groups(["alcohol"])]
     private ?Image $image = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["alcohol"])]
+    private ?\DateTimeInterface $dateCreated = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["alcohol"])]
+    private ?\DateTimeInterface $dateModified = null;
 
     public function getId(): ?UuidInterface
     {
@@ -156,6 +164,30 @@ class Alcohol
     public function setImage(?Image $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getDateCreated(): ?\DateTimeInterface
+    {
+        return $this->dateCreated;
+    }
+
+    public function setDateCreated(\DateTimeInterface $dateCreated): static
+    {
+        $this->dateCreated = $dateCreated;
+
+        return $this;
+    }
+
+    public function getDateModified(): ?\DateTimeInterface
+    {
+        return $this->dateModified;
+    }
+
+    public function setDateModified(\DateTimeInterface $dateModified): static
+    {
+        $this->dateModified = $dateModified;
 
         return $this;
     }
