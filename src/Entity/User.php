@@ -6,7 +6,6 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -109,10 +108,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->plainPassword;
     }
 
-    public function setPlainPassword(string $plainPassword, UserPasswordHasherInterface $passwordHasher): static
+    public function setPlainPassword(string $plainPassword): static
     {
         $this->plainPassword = $plainPassword;
-        $this->password = $passwordHasher->hashPassword($this, $plainPassword);
     
         return $this;
     }

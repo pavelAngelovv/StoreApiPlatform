@@ -10,20 +10,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateUserCommand extends Command
 {
     protected static $defaultName = 'app:create-user';
 
-    private UserPasswordHasherInterface $passwordHasher;
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator
+    ) {
         parent::__construct();
-
-        $this->passwordHasher = $passwordHasher;
-        $this->entityManager = $entityManager;
     }
 
     protected function configure()
@@ -43,35 +42,45 @@ class CreateUserCommand extends Command
         $password = $input->getArgument('password');
         $role = $input->getArgument('role');
 
-        if (!$this->isPasswordStrong($password)) {
-            $io->error('Password does not meet the strength requirements.');
+        $violations = $this->validator->validate([
+            'username' => $username,
+            'password' => $password,
+            'role' => $role,
+        ], new Assert\Collection([
+            'username' => [new Assert\NotBlank()],
+            'password' => [
+                new Assert\NotBlank(),
+                new Assert\Length(['min' => 16]),
+                new Assert\Regex('/[A-Z]/', 'Password must contain at least one uppercase letter'),
+                new Assert\Regex('/[a-z]/', 'Password must contain at least one lowercase letter'),
+                new Assert\Regex('/\d/', 'Password must contain at least one digit'),
+            ],
+            'role' => [
+                new Assert\NotBlank(),
+                new Assert\Choice(
+                    choices: ['ROLE_USER', 'ROLE_ADMIN'],
+                    message: 'Invalid role. Allowed values are ROLE_USER or ROLE_ADMIN.'
+                ),
+            ],
+        ]));
+
+        if (count($violations) > 0) {
+            foreach ($violations as $violation) {
+                $io->error($violation->getMessage());
+            }
             return Command::FAILURE;
         }
 
         $user = new User();
         $user
             ->setUsername($username)
-            ->setRoles([$role])
-            ->setPlainPassword($password, $this->passwordHasher);
+            ->setPlainPassword($password)
+            ->setRoles([$role]);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
         $io->success('User created successfully.');
         return Command::SUCCESS;
-    }
-
-    private function isPasswordStrong(string $password): bool
-    {
-        $hasUpperCase = preg_match('/[A-Z]/', $password);
-        $hasLowerCase = preg_match('/[a-z]/', $password);
-        $hasDigit = preg_match('/\d/', $password);
-        $hasSpecialChar = preg_match('/[^a-zA-Z\d]/', $password);
-
-        return strlen($password) >= 16
-            && $hasUpperCase
-            && $hasLowerCase
-            && $hasDigit
-            && $hasSpecialChar;
     }
 }
