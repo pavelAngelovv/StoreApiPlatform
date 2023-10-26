@@ -8,6 +8,7 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -20,11 +21,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?UuidInterface $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: 'Username is required.')]
     private ?string $username = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Role is required')]
+    #[Assert\Choice(
+        choices: ["ROLE_USER", "ROLE_ADMIN"],
+        multiple: true,
+        multipleMessage: 'Invalid role. Allowed values are ROLE_USER and ROLE_ADMIN.'
+    )]
     private array $roles = [];
-
+    
+    #[Assert\NotBlank(message: 'Password is required.')]
+    #[Assert\Length(min: 16, minMessage: 'Password must be at least 16 characters long.')]
+    #[Assert\Regex('/[A-Z]/', message: 'Password must contain at least one uppercase letter.')]
+    #[Assert\Regex('/[a-z]/', message: 'Password must contain at least one lowercase letter.')]
+    #[Assert\Regex('/\d/', message: 'Password must contain at least one digit.')]
     private ?string $plainPassword = null;
 
     /**
