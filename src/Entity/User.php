@@ -24,7 +24,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Username is required.')]
     private ?string $username = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Email is required.')]
+    private ?string $email = null;
+
+    #[ORM\Column(type: 'json')] //
     #[Assert\NotBlank(message: 'Role is required')]
     #[Assert\Choice(
         choices: ["ROLE_USER", "ROLE_ADMIN"],
@@ -125,6 +129,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->plainPassword = $plainPassword;
     
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
         return $this;
     }
 }

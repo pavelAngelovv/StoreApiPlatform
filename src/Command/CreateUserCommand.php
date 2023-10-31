@@ -29,6 +29,7 @@ class CreateUserCommand extends Command
         $this
             ->setDescription('Create a new user')
             ->addArgument('username', InputArgument::REQUIRED, 'User username')
+            ->addArgument('email', InputArgument::REQUIRED, 'User email')
             ->addArgument('password', InputArgument::REQUIRED, 'User password')
             ->addArgument('role', InputArgument::REQUIRED, 'User role')
         ;
@@ -38,12 +39,14 @@ class CreateUserCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $username = $input->getArgument('username');
+        $email = $input->getArgument('email');
         $password = $input->getArgument('password');
         $role = $input->getArgument('role');
 
         $user = new User();
         $user
         ->setUsername($username)
+        ->setEmail($email)
         ->setPlainPassword($password)
         ->setRoles([$role]);
         

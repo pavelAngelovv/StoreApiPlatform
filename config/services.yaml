@@ -33,5 +33,16 @@ services:
             - '@security.password_hasher'
         tags:
             - { name: 'doctrine.event_subscriber', connection: 'default' }
+    
+    App\EventSubscriber\NewItemSubscriber:
+        arguments:
+            $eventDispatcher: '@event_dispatcher'
+            $mailer: '@mailer'
+            $userRepository: '@App\Repository\UserRepository'
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
+    App\Event\NewItemEvent: ~
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

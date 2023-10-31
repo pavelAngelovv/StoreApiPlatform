@@ -1,10 +1,12 @@
 App\Entity\User:
   user_1:
     username: user1
+    email: user1@gmail.com
     roles: ["ROLE_ADMIN"]
     password: \$2a\$04\$eVkQFdJ8/xWE73kZ5Tz94uatIlDhqVg9WcPfP2dm63DXIndihviUy
 
   user_2:
     username: user2
+    email: user2@gmail.com
     roles: ["ROLE_USER"]
     password: \$2a\$04\$qvC1wsBYqWrzeKaIYsLLZ.G57hhZ0IGvZA.cnXpWYHO4OrVjqvHMG
