@@ -14,8 +14,8 @@ class NewAlcoholSubscriber implements EventSubscriber
     public function __construct(
         private MessageBusInterface $messageBus,
         private UserRepository $userRepository
-        ) {
-        }
+    ) {
+    }
 
     public function prePersist(LifecycleEventArgs $args)
     {
@@ -29,8 +29,8 @@ class NewAlcoholSubscriber implements EventSubscriber
                     'New Alcohol',
                     $adminUser->getEmail(),
                     [
-                        'title' => 'A new alcohol was created!',
-                        'content' => 'A new item was created, check it out!'
+                        'title' => $entity->getName(),
+                        'content' => 'This the newest ' . $entity->getType() . ' on the market'
                     ]
                 );
 
