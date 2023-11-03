@@ -2,11 +2,11 @@
 
 namespace App\EventSubscriber;
 
-use Doctrine\Common\EventSubscriber;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use App\Entity\Alcohol;
 use App\Message\NewAlcoholMessage;
 use App\Repository\UserRepository;
+use Doctrine\Common\EventSubscriber;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class NewAlcoholSubscriber implements EventSubscriber
