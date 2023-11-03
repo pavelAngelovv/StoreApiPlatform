@@ -2,19 +2,19 @@
 
 namespace App\MessageHandler;
 
-use App\Message\NewItemEmailMessage;
+use App\Message\NewAlcoholMessage;
 use App\Service\EmailService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final class NewItemEmailMessageHandler
+final class NewAlcoholMessageHandler
 {
     public function __construct(
         private EmailService $emailService
     ) {
     }
 
-        public function __invoke(NewItemEmailMessage $message)
+        public function __invoke(NewAlcoholMessage $message)
         {
             $subject = $message->getSubject();
             $recipient = $message->getRecipient();

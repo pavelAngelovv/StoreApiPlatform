@@ -3,7 +3,8 @@
 namespace App\EventSubscriber;
 
 use ApiPlatform\Symfony\EventListener\EventPriorities;
-use App\Message\NewItemEmailMessage;
+use App\Entity\Alcohol;
+use App\Message\NewAlcoholMessage;
 use App\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -11,7 +12,7 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class NewItemEmailSubscriber implements EventSubscriberInterface
+class NewAlcoholSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -23,15 +24,16 @@ class NewItemEmailSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::VIEW => ['onKernelView', EventPriorities::POST_WRITE],
+            KernelEvents::VIEW => ['onPostWrite', EventPriorities::POST_WRITE],
         ];
     }
 
-    public function onKernelView(ViewEvent $event)
+    public function onPostWrite(ViewEvent $event)
     {
         $request = $event->getRequest();
+        $data = $event->getControllerResult();
 
-        if ($request->isMethod('POST')) {
+        if ($request->isMethod('POST') && $data instanceof Alcohol) {
             $adminUsers = $this->userRepository->findByRole('ROLE_ADMIN');
 
             $subject = 'New Alcohol';
@@ -41,7 +43,7 @@ class NewItemEmailSubscriber implements EventSubscriberInterface
             ];
 
             foreach ($adminUsers as $adminUser) {
-                $message = new NewItemEmailMessage(
+                $message = new NewAlcoholMessage(
                     $subject,
                     $adminUser->getEmail(),
                     $context

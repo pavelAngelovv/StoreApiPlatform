@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-final class NewItemEmailMessage
+final class NewAlcoholMessage
 {
     public function __construct(
         private string $subject,

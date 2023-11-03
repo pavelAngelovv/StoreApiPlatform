@@ -7,7 +7,7 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
 
         routing:
-            'App\Message\NewItemEmailMessage': async
+            'App\Message\NewAlcoholMessage': async
 
 # when@test:
 #    framework:
