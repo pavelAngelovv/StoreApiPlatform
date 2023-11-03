@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Message\NewItemMessage;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -14,14 +14,15 @@ class EmailService
     ) {
     }
 
-    public function sendEmail( string $subject, string $recipient, array $context)
+    public function sendEmail(string $subject, string $recipient, array $context)
     {
-                $message = new NewItemMessage(
-                    $subject,
-                    $recipient,
-                    $context
-                );
+        $email = (new TemplatedEmail())
+            ->from('4d572b37425429@inbox.mailtrap.io')
+            ->subject($subject)
+            ->to($recipient)
+            ->htmlTemplate('new.item.email.html.twig')
+            ->context($context);
 
-                $this->bus->dispatch($message);
+        $this->mailer->send($email);
     }
 }

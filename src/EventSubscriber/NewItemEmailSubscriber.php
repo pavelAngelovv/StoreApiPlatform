@@ -3,19 +3,20 @@
 namespace App\EventSubscriber;
 
 use ApiPlatform\Symfony\EventListener\EventPriorities;
+use App\Message\NewItemEmailMessage;
 use App\Repository\UserRepository;
-use App\Service\EmailService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\MessageBusInterface;
 
-class NewItemSubscriber implements EventSubscriberInterface
+class NewItemEmailSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private LoggerInterface $logger,
-        private UserRepository $userRepository,
-        private EmailService $emailService
+        private MessageBusInterface $messageBus,
+        private UserRepository $userRepository
     ) {
     }
 
@@ -40,8 +41,13 @@ class NewItemSubscriber implements EventSubscriberInterface
             ];
 
             foreach ($adminUsers as $adminUser) {
-                $this->emailService->sendEmail($subject, $adminUser->getEmail(), $context);
-                $this->logger->info('Email message sent to: ' . $adminUser->getEmail());
+                $message = new NewItemEmailMessage(
+                    $subject,
+                    $adminUser->getEmail(),
+                    $context
+                );
+
+                $this->messageBus->dispatch($message);
             }
         }
     }

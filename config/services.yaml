@@ -34,11 +34,9 @@ services:
         tags:
             - { name: 'doctrine.event_subscriber', connection: 'default' }
     
-    App\EventSubscriber\NewItemSubscriber:
+    App\EventSubscriber\NewItemEmailSubscriber:
         tags:
             - { name: 'kernel.event_subscriber' }
-
-    App\Service\EmailService: ~
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
