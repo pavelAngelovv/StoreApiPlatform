@@ -14,12 +14,12 @@ final class NewAlcoholMessageHandler
     ) {
     }
 
-        public function __invoke(NewAlcoholMessage $message)
-        {
-            $subject = $message->getSubject();
-            $recipient = $message->getRecipient();
-            $context = $message->getContext();
+    public function __invoke(NewAlcoholMessage $message)
+    {
+        $subject = $message->getSubject();
+        $recipient = $message->getRecipient();
+        $context = $message->getContext();
 
-            $this->emailService->sendEmail($subject, $recipient, $context);
-        }
+        $this->emailService->sendEmail($subject, $recipient, $context);
+    }
 }
