@@ -15,10 +15,10 @@ class EmailService
     public function sendEmail(string $subject, string $recipient, array $context): void
     {
         $email = (new TemplatedEmail())
-            ->from('4d572b37425429@inbox.mailtrap.io')
+            ->from('3c1016dcc8657a@inbox.mailtrap.io')
             ->subject($subject)
             ->to($recipient)
-            ->htmlTemplate('new.item.email.html.twig')
+            ->htmlTemplate('new.alcohol.email.html.twig')
             ->context($context);
 
         $this->mailer->send($email);
